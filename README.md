@@ -1,4 +1,4 @@
-![header](./figures/header.jpg)
+![header](figures/header.jpg)
 # Techniques de régression et de scoring
 
 Nom  | Date | Sujet
@@ -101,7 +101,7 @@ J'ai utilisé la fonction [pairplot de eaborn](https://seaborn.pydata.org/genera
 ```python
 sns.pairplot(dataset, hue='Species')
 ```
-![1_pairplot](./figures/1_pairplot.png) 
+![1_pairplot](figures/1_pairplot.png) 
 
 Regardons d'un peu plus près nos critères à l'aide d'un histogramme tracé grâce à [matplotlib](https://matplotlib.org/).
 
@@ -110,7 +110,7 @@ dataset.hist()
 plt.show()
 ```
 
-![2_hist](./figures/2_hist.png)
+![2_hist](figures/2_hist.png)
 > On oberve qu'il y a environ 50% de poisson appartenant à l'espèce 1 et le reste à l'espèce 2.
 
 > Grâce à ces figures on voit que la longueur semble bien distribuée entre tous les poissons en suivant une sorte de courbe de loi normale. Cependant, on observe pour la hauteur du poisson deux différents pics, comme si l'on avait deux lois normales centrées différement.
