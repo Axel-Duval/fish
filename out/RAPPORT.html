@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Techniques de r&eacute;gression et de scoring</title>
+        <style>
+/* From extension vscode.markdown-math */
+@font-face{font-family:KaTeX_AMS;src:url(fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(fonts/KaTeX_AMS-Regular.woff) format("woff"),url(fonts/KaTeX_AMS-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Caligraphic;src:url(fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype");font-weight:700;font-style:normal}@font-face{font-family:KaTeX_Caligraphic;src:url(fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Fraktur;src:url(fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(fonts/KaTeX_Fraktur-Bold.ttf) format("truetype");font-weight:700;font-style:normal}@font-face{font-family:KaTeX_Fraktur;src:url(fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(fonts/KaTeX_Fraktur-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Main;src:url(fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(fonts/KaTeX_Main-Bold.woff) format("woff"),url(fonts/KaTeX_Main-Bold.ttf) format("truetype");font-weight:700;font-style:normal}@font-face{font-family:KaTeX_Main;src:url(fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Main-BoldItalic.ttf) format("truetype");font-weight:700;font-style:italic}@font-face{font-family:KaTeX_Main;src:url(fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(fonts/KaTeX_Main-Italic.woff) format("woff"),url(fonts/KaTeX_Main-Italic.ttf) format("truetype");font-weight:400;font-style:italic}@font-face{font-family:KaTeX_Main;src:url(fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(fonts/KaTeX_Main-Regular.woff) format("woff"),url(fonts/KaTeX_Main-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Math;src:url(fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Math-BoldItalic.ttf) format("truetype");font-weight:700;font-style:italic}@font-face{font-family:KaTeX_Math;src:url(fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(fonts/KaTeX_Math-Italic.woff) format("woff"),url(fonts/KaTeX_Math-Italic.ttf) format("truetype");font-weight:400;font-style:italic}@font-face{font-family:"KaTeX_SansSerif";src:url(fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(fonts/KaTeX_SansSerif-Bold.ttf) format("truetype");font-weight:700;font-style:normal}@font-face{font-family:"KaTeX_SansSerif";src:url(fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(fonts/KaTeX_SansSerif-Italic.ttf) format("truetype");font-weight:400;font-style:italic}@font-face{font-family:"KaTeX_SansSerif";src:url(fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(fonts/KaTeX_SansSerif-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Script;src:url(fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(fonts/KaTeX_Script-Regular.woff) format("woff"),url(fonts/KaTeX_Script-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Size1;src:url(fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size1-Regular.woff) format("woff"),url(fonts/KaTeX_Size1-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Size2;src:url(fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size2-Regular.woff) format("woff"),url(fonts/KaTeX_Size2-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Size3;src:url(fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size3-Regular.woff) format("woff"),url(fonts/KaTeX_Size3-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Size4;src:url(fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size4-Regular.woff) format("woff"),url(fonts/KaTeX_Size4-Regular.ttf) format("truetype");font-weight:400;font-style:normal}@font-face{font-family:KaTeX_Typewriter;src:url(fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(fonts/KaTeX_Typewriter-Regular.ttf) format("truetype");font-weight:400;font-style:normal}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0;text-rendering:auto;border-color:currentColor}.katex *{-ms-high-contrast-adjust:none!important}.katex .katex-version:after{content:"0.13.0"}.katex .katex-mathml{position:absolute;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-weight:700;font-style:italic}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{display:inline-table;table-layout:fixed;border-collapse:collapse}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;vertical-align:bottom;position:relative}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;vertical-align:bottom;font-size:1px;width:2px;min-width:2px}.katex .vbox{display:inline-flex;flex-direction:column;align-items:baseline}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{width:0;max-width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{display:inline-block;width:100%;border-bottom-style:solid}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{width:0;position:relative}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{display:inline-block;border:0 solid;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{display:inline-block;width:100%;border-bottom-style:solid}.katex .hdashline{display:inline-block;width:100%;border-bottom-style:dashed}.katex .sqrt>.root{margin-left:.27777778em;margin-right:-.55555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.83333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.16666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.66666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.45666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.14666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.71428571em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.85714286em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.14285714em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.28571429em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.42857143em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.71428571em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.05714286em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.46857143em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.96285714em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.55428571em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.55555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.66666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.77777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.88888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.11111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.30444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.76444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.41666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.58333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.66666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.83333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.72833333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.07333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.34722222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.41666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.48611111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.55555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.69444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.83333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.44027778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.72777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.28935185em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.34722222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.40509259em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.46296296em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.52083333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.69444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.83333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.20023148em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.43981481em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.24108004em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.28929605em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.33751205em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.38572806em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.43394407em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.48216008em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.57859209em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.69431051em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.83317261em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.19961427em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.20096463em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.24115756em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.28135048em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.32154341em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.36173633em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.40192926em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.48231511em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.57877814em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.69453376em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.83360129em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{display:block;position:absolute;width:100%;height:inherit;fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex svg path{stroke:none}.katex img{border-style:none;min-width:0;min-height:0;max-width:none;max-height:none}.katex .stretchy{width:100%;display:block;position:relative;overflow:hidden}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{width:100%;position:relative;overflow:hidden}.katex .halfarrow-left{position:absolute;left:0;width:50.2%;overflow:hidden}.katex .halfarrow-right{position:absolute;right:0;width:50.2%;overflow:hidden}.katex .brace-left{position:absolute;left:0;width:25.1%;overflow:hidden}.katex .brace-center{position:absolute;left:25%;width:50%;overflow:hidden}.katex .brace-right{position:absolute;right:0;width:25.1%;overflow:hidden}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{box-sizing:border-box;border:.04em solid}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{box-sizing:border-content;border-top:.049em solid;border-right:.049em solid;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{counter-increment:katexEqnNo;content:"(" counter(katexEqnNo) ")"}.katex .mml-eqn-num:before{counter-increment:mmlEqnNo;content:"(" counter(mmlEqnNo) ")"}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;position:absolute;left:calc(50% + .3em);text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{text-align:left;padding-left:2em}body{counter-reset:katexEqnNo mmlEqnNo}
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.katex-error {
+	color: var(--vscode-editorError-foreground);
+}
+
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <p><img src="file:////home/duvalax/Documents/fish/figures/header.jpg" alt="header"></p>
+<h1 id="techniques-de-régression-et-de-scoring">Techniques de régression et de scoring</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Nom</th>
+<th style="text-align:center">Date</th>
+<th style="text-align:center">Sujet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Duval Axel</td>
+<td style="text-align:center"><code>09/01/2022</code></td>
+<td style="text-align:center"><a href="https://plmlab.math.cnrs.fr/gdurif_teaching/polytech_ig5_regression_tutorial/-/blob/main/data/Fish.html">fish</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="choix-des-outils">Choix des outils</h2>
+<p>Pour réaliser ce travail, j'ai choisi d'utiliser <strong>python</strong> pour diverses raisons:</p>
+<ul>
+<li>je ne suis pas un grand fan du langage <strong>R</strong></li>
+<li><strong>python</strong> est un langage de script également très utilisé dans la datascience</li>
+<li>j'ai l'habitude d'utiliser <strong>python</strong> et ses librairies de visualisation</li>
+</ul>
+<p>Afin de profiter des avantages de ce language, j'utilise des librairies compatibles très connues comme:</p>
+<ul>
+<li><a href="https://matplotlib.org/">matplotlib</a> pour la visualisation</li>
+<li><a href="https://pandas.pydata.org/">pandas</a> pour manipuler les données</li>
+<li><a href="https://seaborn.pydata.org/">seaborn</a> pour de la visualisation orientée statistiques</li>
+<li><a href="https://scikit-learn.org/stable/">sklearn</a> pour effectuer la régression logistique</li>
+</ul>
+<hr>
+<h2 id="lecture-du-fichier">Lecture du fichier</h2>
+<p>La première étape est de lire le fichier fourni. Cette lecture se fait simplement en utilisant la librairie <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html">pandas</a>.</p>
+<pre><code class="language-python"><div><span class="hljs-keyword">with</span> open(<span class="hljs-string">&#x27;./fish.csv&#x27;</span>, newline=<span class="hljs-string">&#x27;&#x27;</span>) <span class="hljs-keyword">as</span> file:
+    dataset = pd.read_csv(file, delimiter=<span class="hljs-string">&#x27;;&#x27;</span>)
+</div></code></pre>
+<hr>
+<h2 id="exploration-des-données">Exploration des données</h2>
+<p>Une fois les données chargées dans un <em>dataset</em>, nous pouvons explorer les données pour voir à quoi elles ressemblent.</p>
+<p><strong>Dimension du dataset</strong></p>
+<pre><code class="language-python"><div>print(dataset.shape)
+
+(<span class="hljs-number">111</span>, <span class="hljs-number">4</span>)
+</div></code></pre>
+<blockquote>
+<p>Nous avons donc un échantillon de données de 111 poissons et nous observons 4 différents critères.</p>
+</blockquote>
+<p><strong>Les premières entrées</strong></p>
+<pre><code class="language-python"><div>print(dataset.head())
+
+   Species  Weight   Height   Width
+<span class="hljs-number">0</span>        <span class="hljs-number">0</span>   <span class="hljs-number">242.0</span>  <span class="hljs-number">11.5200</span>  <span class="hljs-number">4.0200</span>
+<span class="hljs-number">1</span>        <span class="hljs-number">0</span>   <span class="hljs-number">290.0</span>  <span class="hljs-number">12.4800</span>  <span class="hljs-number">4.3056</span>
+<span class="hljs-number">2</span>        <span class="hljs-number">0</span>   <span class="hljs-number">340.0</span>  <span class="hljs-number">12.3778</span>  <span class="hljs-number">4.6961</span>
+<span class="hljs-number">3</span>        <span class="hljs-number">0</span>   <span class="hljs-number">363.0</span>  <span class="hljs-number">12.7300</span>  <span class="hljs-number">4.4555</span>
+<span class="hljs-number">4</span>        <span class="hljs-number">0</span>   <span class="hljs-number">430.0</span>  <span class="hljs-number">12.4440</span>  <span class="hljs-number">5.1340</span>
+
+</div></code></pre>
+<blockquote>
+<p>On peut supposer que le poids est en gramme, et les mesures en centimètres.</p>
+</blockquote>
+<p><strong>Les critères</strong></p>
+<pre><code class="language-python"><div>print(dataset.keys())
+
+Index([<span class="hljs-string">&#x27;Species&#x27;</span>, <span class="hljs-string">&#x27;Weight&#x27;</span>, <span class="hljs-string">&#x27;Height&#x27;</span>, <span class="hljs-string">&#x27;Width&#x27;</span>], dtype=<span class="hljs-string">&#x27;object&#x27;</span>)
+</div></code></pre>
+<p><strong>Typage et taille des données</strong></p>
+<pre><code class="language-python"><div>print(dataset.info())
+
+Data columns (total <span class="hljs-number">4</span> columns):
+RangeIndex: <span class="hljs-number">111</span> entries, <span class="hljs-number">0</span> to <span class="hljs-number">110</span>
+ <span class="hljs-comment">#   Column   Non-Null Count  Dtype  </span>
+---  ------   --------------  -----  
+ <span class="hljs-number">0</span>   Species  <span class="hljs-number">111</span> non-null    int64  
+ <span class="hljs-number">1</span>   Weight   <span class="hljs-number">111</span> non-null    float64
+ <span class="hljs-number">2</span>   Height   <span class="hljs-number">111</span> non-null    float64
+ <span class="hljs-number">3</span>   Width    <span class="hljs-number">111</span> non-null    float64
+dtypes: float64(<span class="hljs-number">3</span>), int64(<span class="hljs-number">1</span>)
+memory usage: <span class="hljs-number">3.6</span> KB
+</div></code></pre>
+<blockquote>
+<p>Nous n'avons pas de données nulles ce qui est une bonne chose, le nettoyage de ces données ne devrait pas être trop long.</p>
+</blockquote>
+<p><strong>Quelques mesures statistiques</strong></p>
+<pre><code class="language-python"><div>print(dataset.describe())
+
+          Species       Weight      Height       Width
+count  <span class="hljs-number">111.000000</span>   <span class="hljs-number">111.000000</span>  <span class="hljs-number">111.000000</span>  <span class="hljs-number">111.000000</span>
+mean     <span class="hljs-number">0.504505</span>   <span class="hljs-number">415.048649</span>    <span class="hljs-number">9.960117</span>    <span class="hljs-number">4.764721</span>
+std      <span class="hljs-number">0.502247</span>   <span class="hljs-number">318.618193</span>    <span class="hljs-number">4.297672</span>    <span class="hljs-number">1.476698</span>
+min      <span class="hljs-number">0.000000</span>     <span class="hljs-number">0.000000</span>    <span class="hljs-number">2.112000</span>    <span class="hljs-number">1.408000</span>
+<span class="hljs-number">25</span>%      <span class="hljs-number">0.000000</span>   <span class="hljs-number">137.500000</span>    <span class="hljs-number">6.191850</span>    <span class="hljs-number">3.624000</span>
+<span class="hljs-number">50</span>%      <span class="hljs-number">1.000000</span>   <span class="hljs-number">300.000000</span>    <span class="hljs-number">8.876800</span>    <span class="hljs-number">4.566200</span>
+<span class="hljs-number">75</span>%      <span class="hljs-number">1.000000</span>   <span class="hljs-number">687.500000</span>   <span class="hljs-number">13.680800</span>    <span class="hljs-number">6.010500</span>
+max      <span class="hljs-number">1.000000</span>  <span class="hljs-number">1100.000000</span>   <span class="hljs-number">18.957000</span>    <span class="hljs-number">8.142000</span>
+</div></code></pre>
+<blockquote>
+<p>On voit qu'il y a sans doute une erreur concernant un ou plusieurs poissons car le poids minimum est de 0g. Pour nous en assurer nous pouvons visualiser ces données.</p>
+</blockquote>
+<hr>
+<h2 id="visualisation-des-données">Visualisation des données</h2>
+<p>J'ai utilisé la fonction <a href="https://seaborn.pydata.org/generated/seaborn.pairplot.html">pairplot de eaborn</a> pour obtenir cette figure qui permet de se rendre compte de la relation et la distribution de nos données.</p>
+<pre><code class="language-python"><div>sns.pairplot(dataset, hue=<span class="hljs-string">&#x27;Species&#x27;</span>)
+</div></code></pre>
+<p><img src="file:////home/duvalax/Documents/fish/figures/1_pairplot.png" alt="1_pairplot"></p>
+<p>Regardons d'un peu plus près nos critères à l'aide d'un histogramme tracé grâce à <a href="https://matplotlib.org/">matplotlib</a>.</p>
+<pre><code class="language-python"><div>dataset.hist()
+plt.show()
+</div></code></pre>
+<p><img src="file:////home/duvalax/Documents/fish/figures/2_hist.png" alt="2_hist"></p>
+<blockquote>
+<p>On oberve qu'il y a environ 50% de poisson appartenant à l'espèce 1 et le reste à l'espèce 2.</p>
+</blockquote>
+<blockquote>
+<p>Grâce à ces figures on voit que la longueur semble bien distribuée entre tous les poissons en suivant une sorte de courbe de loi normale. Cependant, on observe pour la hauteur du poisson deux différents pics, comme si l'on avait deux lois normales centrées différement.</p>
+</blockquote>
+<hr>
+<h2 id="nettoyage-des-données">Nettoyage des données</h2>
+<p>Nous avons vu qu'il y avait, pour certains poissons, un poids égal à 0 grammes. Pour ne pas fausser nos résultats et entrainer notre futur modèle correctement il faut remplacer ce 0 par la moyenne ou la médianne de la série. J'ai choisi d'utiliser la moyenne.</p>
+<p>Je modifie donc le dataset en conséquence</p>
+<pre><code class="language-python"><div>weight_mean = dataset[<span class="hljs-string">&#x27;Weight&#x27;</span>].mean()
+dataset[<span class="hljs-string">&#x27;Weight&#x27;</span>] = dataset[<span class="hljs-string">&#x27;Weight&#x27;</span>].replace(to_replace=<span class="hljs-number">0</span>, value=weight_mean)
+</div></code></pre>
+<hr>
+<h2 id="modèle-de-régression">Modèle de régression</h2>
+<p><strong>Décomposition du <em>dataset</em></strong>
+Pour effectuer la régression il nous faut décomposer le <em>dataset</em> en 2 vecteurs, X et y.</p>
+<pre><code class="language-python"><div>X = dataset.drop(<span class="hljs-string">&#x27;Species&#x27;</span>, axis=<span class="hljs-number">1</span>)
+y = dataset[<span class="hljs-string">&#x27;Species&#x27;</span>]
+</div></code></pre>
+<blockquote>
+<p>Le vecteur X contient uniquement les attributs des poissons (<em>dim 111x3</em>). Tandis que le vecteur y contient uniquement l'espèce (<em>dim 111x1</em>).</p>
+</blockquote>
+<p><strong>Découpage des vecteurs</strong>
+Il faut ensuite découper nos vecteurs en 2 parties:</p>
+<ul>
+<li>une pour entrainer le modèle</li>
+<li>une pour tester la validité du modèle.</li>
+</ul>
+<p>Pour faire celà j'utilise la fonction <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html">train_test_split de sklearn</a>.</p>
+<pre><code class="language-python"><div>X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="hljs-number">0.2</span>, random_state=<span class="hljs-number">555</span>)
+</div></code></pre>
+<blockquote>
+<p>J'ai choisi de prendre 80% des données pour entrainer le modèle. Le <code>random_state</code> aussi appelé <code>seed</code> permet de reproduire le caractère aléatoire de la séparation du dataset, je l'ai fixé à 555 mais nous verrons ensuite qu'il est possible de le changer.</p>
+</blockquote>
+<p><strong>Choix du modèle</strong>
+Nous pouvons à présent instancier notre modèle de régression. J'utilise encore une fois sklearn et plus partculièrement leur <a href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html">modèle de régression logistique</a> qui permet de faire de la <em>Binary Classification</em>.</p>
+<pre><code class="language-python"><div>lr = LogisticRegression(penalty=<span class="hljs-string">&#x27;l2&#x27;</span>, tol=<span class="hljs-number">0.0000001</span>)
+</div></code></pre>
+<blockquote>
+<p>J'ai choisi d'utiliser la <a href="https://en.wikipedia.org/wiki/Ridge_regression#:~:text=Ridge%20regression%20is%20a%20method,econometrics%2C%20chemistry%2C%20and%20engineering.">ridge Regression</a>(<code>'l2'</code>) pour la pénalité car les variables sont très corrélées (voir figures précédentes). J'ai choisi une très faible tolérance de 10e-6 car je n'ai pas beaucoup de données.</p>
+</blockquote>
+<p><strong>Entraînement</strong></p>
+<pre><code class="language-python"><div>lr.fit(X_train, y_train)
+</div></code></pre>
+<blockquote>
+<p>Cet entrainement aussi appelé le <code>fit</code> est très rapide car nous avons un très petit jeu de données.</p>
+</blockquote>
+<p><strong>Prédiction</strong>
+Il est temps à présent de voir si notre modèle est bien paramétré et s'il est performant. Il va devoir prédire, à l'aide du jeu de données de test, l'espèce de ces poissons.</p>
+<pre><code class="language-python"><div>prediction = lr.predict(X_test)
+print(prediction)
+
+[<span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>]
+</div></code></pre>
+<blockquote>
+<p>Le tableau ci-dessus représente la prédiction de l'espèce des poissons du jeu de donnée de test.</p>
+</blockquote>
+<hr>
+<h2 id="performance-du-modèle">Performance du modèle</h2>
+<p>Notre modèle à su prédire l'espèce des poissons mais il s'est peut être parfois trompé. C'est pour celà que nous devons confronter notre modèle à la réalité. Pour celà j'utilise les fonctions <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.classification_report.html">classification_report</a> et <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html">confusion_matrix</a> de sklearn.</p>
+<pre><code class="language-python"><div>print(classification_report(y_test, prediction))
+
+              precision    recall  f1-score   support
+
+           <span class="hljs-number">0</span>       <span class="hljs-number">1.00</span>      <span class="hljs-number">0.93</span>      <span class="hljs-number">0.96</span>        <span class="hljs-number">14</span>
+           <span class="hljs-number">1</span>       <span class="hljs-number">0.90</span>      <span class="hljs-number">1.00</span>      <span class="hljs-number">0.95</span>         <span class="hljs-number">9</span>
+
+    accuracy                           <span class="hljs-number">0.96</span>        <span class="hljs-number">23</span>
+   macro avg       <span class="hljs-number">0.95</span>      <span class="hljs-number">0.96</span>      <span class="hljs-number">0.96</span>        <span class="hljs-number">23</span>
+weighted avg       <span class="hljs-number">0.96</span>      <span class="hljs-number">0.96</span>      <span class="hljs-number">0.96</span>        <span class="hljs-number">23</span>
+</div></code></pre>
+<blockquote>
+<p>On voit que notre modèle est très précis (accuracy = 96%). Il arrive parfaitement à détecter les poissons de l'espèce 0 et se débrouille également très bien avec ceux de l'espèce 1. Le recall et également très bon pour les deux espèces.C'est peut être un coup de chance, il est possible que les données de test soient favorables ou que notre modèle ait fait du sur-apprentissage. Pour s'en assurer il faudrait entrainer et tester diverses parties de notre <em>dataset</em> et c'est ce que nous allons faire ensuite.</p>
+</blockquote>
+<pre><code class="language-python"><div>print(confusion_matrix(y_test, prediction))
+
+[[<span class="hljs-number">13</span>  <span class="hljs-number">1</span>]
+ [ <span class="hljs-number">0</span>  <span class="hljs-number">9</span>]]
+</div></code></pre>
+<blockquote>
+<p>On observe que les 13 poissons qui ont été classé dans l'espèce 0 sont bien classés. Les 9 poissons classé dans l'espèce 1 sont eux aussi bien classés. En fait il y a eu un seul poisson qui a été mal classé. Le modèle à prédit qu'il faisait parti de l'espèce 0 alors qu'il est en réalité de l'espèce 1.</p>
+</blockquote>
+<p><strong>Reproductibilité</strong>
+Nous avons très peu de données dans notre <em>dataset</em> et encore moins dans notre jeu de test, c'est pourquoi le modèle à peu être sur-appris. Je vais donc instantier 100 modèles différents avec des jeux de tests différents pour voir si le modèle se débrouille toujours aussi bien.</p>
+<pre><code class="language-python"><div>lr = LogisticRegression(penalty=<span class="hljs-string">&#x27;l2&#x27;</span>, tol=<span class="hljs-number">0.0000001</span>)
+p = []
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">100</span>):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="hljs-number">0.2</span>, random_state=i)
+    lr.fit(X_train, y_train)
+    prediction = lr.predict(X_test)
+    p.append(classification_report(y_test, prediction,output_dict=<span class="hljs-literal">True</span>)[<span class="hljs-string">&quot;accuracy&quot;</span>])
+print(statistics.mean(p))
+
+<span class="hljs-number">0.851304347826087</span>
+</div></code></pre>
+<blockquote>
+<p>La précision moyenne sur les 100 modèles est de 85%. C'est un très bon score et on se rends compte que le <code>random_state=555</code> était, en effet, un cas particulier.</p>
+</blockquote>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>Lors de ce TP, j'ai pu prédire l'espèce de nouveaux poissons en fonction de leur taille et de leur poids grâce à un modèle de régression logistique. Nous avons vu que le fait d'avoir un faible jeu de données fait varier la perfomance de notre modèle. Il aurait fallu avoir plus de données pour avoir une précision plus stable.</p>
+<p><a href="https://github.com/Axel-Duval/fish">Lien github</a></p>
+
+    </body>
+    </html>
